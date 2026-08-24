@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Note-Taking App</title>
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #6200ea;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .login-box button {
+            width: 100%;
+            background-color: #6200ea;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .login-box button:hover {
+            background-color: #4b00b0;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Hide the Note-Taking App initially */
+        .hidden {
+            display: none;
+        }
+
+        /* Note-Taking App Styles */
+        header {
+            background-color: #6200ea;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-area input, .input-area textarea, .input-area button {
+            margin-bottom: 10px;
+        }
+
+        .notes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .note-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            width: calc(50% - 10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Note-Taking App -->
+    <header class="hidden" id="appHeader">
+        ✨ Note-Taking App ✨
+    </header>
+    <div class="container hidden" id="noteApp">
+        <div class="input-area">
+            <input type="text" id="title" placeholder="Enter Title">
+            <textarea id="description" rows="4" placeholder="Enter Description"></textarea>
+            <button onclick="addNote()">Add Note</button>
+        </div>
+        <div class="notes" id="notes"></div>
+    </div>
+
+    <script>
+        // Mock Login Credentials
+        const validUsername = "user";
+        const validPassword = "password";
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (username === validUsername && password === validPassword) {
+                alert('Login Successful!');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appHeader').classList.remove('hidden');
+                document.getElementById('noteApp').classList.remove('hidden');
+            } else {
+                errorMessage.textContent = 'Invalid Username or Password!';
+            }
+        }
+
+        // Note-Taking App Code
+        const notes = [];
+
+        function renderNotes() {
+            const notesContainer = document.getElementById('notes');
+            notesContainer.innerHTML = ''; // Clear the container
+            notes.forEach((note, index) => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.innerHTML = `
+                    <h3>${note.title}</h3>
+                    <p>${note.description}</p>
+                    <small>${note.timestamp}</small>
+                    <div class="actions">
+                        <button class="edit" onclick="editNote(${index})">Edit</button>
+                        <button class="delete" onclick="deleteNote(${index})">Delete</button>
+                    </div>
+                `;
+                notesContainer.appendChild(noteCard);
+            });
+        }
+
+        function addNote() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+
+            if (title && description) {
+                const timestamp = new Date().toLocaleString();
+                notes.push({ title, description, timestamp });
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+                renderNotes();
+            } else {
+                alert('Please fill out both fields.');
+            }
+        }
+
+        function editNote(index) {
+            const newTitle = prompt('Edit Title:', notes[index].title);
+            const newDescription = prompt('Edit Description:', notes[index].description);
+
+            if (newTitle && newDescription) {
+                notes[index].title = newTitle;
+                notes[index].description = newDescription;
+                notes[index].timestamp = new Date().toLocaleString();
+                renderNotes();
+            } else {
+                alert('Fields cannot be empty.');
+            }
+        }
+
+        function deleteNote(index) {
+            notes.splice(index, 1); // Remove the note at the specified index
+            renderNotes();
+        }
+
+        renderNotes(); // Initial render
+    </script>
+</body>
+</html>
